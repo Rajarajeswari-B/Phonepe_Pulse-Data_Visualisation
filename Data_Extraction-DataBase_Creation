@@ -1,0 +1,649 @@
+# Clone the Pulse GitHub repository containing transaction and user data
+!git clone https://github.com/PhonePe/pulse.git
+
+# Import necessary libraries
+import pandas as pd   # For data manipulation
+import json           # For reading JSON files
+import os             # For interacting with the file system
+
+# -------------------------------
+# AGGREGATED TRANSACTION DATA
+# -------------------------------
+# Define path to aggregated transaction data by state
+path1 = "/content/pulse/data/aggregated/transaction/country/india/state/"
+# List all states available in the directory
+Agg_Trans_list = os.listdir(path1)
+Agg_Trans_list
+
+# Create dictionary to store extracted transaction data
+clm1 = {'State':[], 'Year':[],'Quarter':[],'Transacion_type':[], 'Transacion_count':[], 'Transacion_amount':[]}
+
+# Loop through each state
+for state in Agg_Trans_list:
+    cur_state = path1 + state + "/"
+    Agg_year_list = os.listdir(cur_state)  # List all years available for the state
+
+    for year in Agg_year_list:
+        cur_year = cur_state + year + "/"
+        Agg_file_list = os.listdir(cur_year)  # List all quarterly JSON files
+
+        # Loop through each JSON file
+        for file in Agg_file_list:
+            cur_file = cur_year + file
+            Data = open(cur_file,'r')   # Open the JSON file
+            A = json.load(Data)         # Load JSON data
+
+            # Extract transaction details from JSON
+            for i in A['data']['transactionData']:
+              name = i['name']
+              count = i['paymentInstruments'][0]['count']
+              amount = i['paymentInstruments'][0]['amount']
+              clm1['Transacion_type'].append(name)
+              clm1['Transacion_count'].append(count)
+              clm1['Transacion_amount'].append(amount)
+              clm1['State'].append(state)
+              clm1['Year'].append(year)
+              clm1['Quarter'].append(int(file.strip('.json')))  # Convert file name to quarter number
+
+# Successfully created a DataFrame for aggregated transactions
+Agg_Trans = pd.DataFrame(clm1)
+
+# -------------------------------
+# AGGREGATED USER DATA
+# -------------------------------
+# Define path to aggregated user data by state
+path2 = "/content/pulse/data/aggregated/user/country/india/state/"
+Agg_User_list = os.listdir(path2)
+Agg_User_list
+
+# Dictionary to store extracted user data
+clm2 = {'State': [], 'Year': [], 'Quarter': [], 'Brands': [], 'Transaction_count': [], 'Percentage': []}
+
+# Loop through each state
+for state in Agg_User_list:
+    cur_state = path2 + state + "/"
+    Agg_year_list = os.listdir(cur_state)  # List all years available
+
+    for year in Agg_year_list:
+        cur_year = cur_state + year + "/"
+        Agg_file_list = os.listdir(cur_year)  # List quarterly JSON files
+
+        # Loop through each file
+        for file in Agg_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            B = json.load(data)
+
+            # Extract user device data
+            try:
+                for j in B["data"]["usersByDevice"]:
+                    brand_name = j["brand"]
+                    counts = j["count"]
+                    percents = j["percentage"]
+                    clm2["Brands"].append(brand_name)
+                    clm2["Transaction_count"].append(counts)
+                    clm2["Percentage"].append(percents)
+                    clm2["State"].append(state)
+                    clm2["Year"].append(year)
+                    clm2["Quarter"].append(int(file.strip('.json')))
+            except:
+                pass  # Skip if the key doesn't exist
+
+# Successfully created a DataFrame for aggregated users
+Agg_User = pd.DataFrame(clm2)
+
+# -------------------------------
+# AGGREGATED INSURANCE DATA
+# -------------------------------
+# Define path to aggregated insurance data
+path3 = "/content/pulse/data/aggregated/insurance/country/india/state/"
+Agg_Insur_list = os.listdir(path3)
+Agg_Insur_list
+
+# Dictionary to store insurance data
+clm3 = {"State":[], "Year":[], "Quarter":[], "Insurance_type":[],"Insurance_count":[], "Insurance_amount":[]}
+
+# Loop through each state
+for state in Agg_Insur_list:
+    cur_state = path3 + state + "/"
+    Agg_year_list = os.listdir(cur_state)
+
+    for year in Agg_year_list:
+        cur_year = cur_state + year +"/"
+        Agg_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Agg_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file,"r")
+            C = json.load(data)
+
+            # Extract insurance transaction details
+            for k in C["data"]["transactionData"]:
+                name = k["name"]
+                count = k["paymentInstruments"][0]["count"]
+                amount = k["paymentInstruments"][0]["amount"]
+                clm3["Insurance_type"].append(name)
+                clm3["Insurance_count"].append(count)
+                clm3["Insurance_amount"].append(amount)
+                clm3["State"].append(state)
+                clm3["Year"].append(year)
+                clm3["Quarter"].append(int(file.strip(".json")))
+
+# Successfully created a DataFrame for aggregated insurance
+Agg_Insur = pd.DataFrame(clm3)
+
+# -------------------------------
+# TOP TRANSACTION DATA BY PINCODE
+# -------------------------------
+# Define path to top transaction data by state
+path4 = "/content/pulse/data/top/transaction/country/india/state/"
+Agg_state_list = os.listdir(path4)
+Agg_state_list
+
+# Dictionary to store top transaction data
+clm4 = {'State':[], 'Year':[],'Quarter':[],'Pincodes':[], 'Transaction_count':[], 'Transaction_amount':[]}
+
+# Loop through each state
+for state in Agg_state_list:
+    cur_state = path4 + state + "/"
+    Agg_year_list = os.listdir(cur_state)
+
+    for year in Agg_year_list:
+        cur_year = cur_state + year + "/"
+        Agg_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Agg_file_list:
+            cur_file = cur_year + file
+            Data = open(cur_file,'r')
+            D = json.load(Data)
+
+            # Extract pincode-wise transaction data
+            for l in D["data"]["pincodes"]:
+                entityName = l["entityName"]
+                count = l["metric"]["count"]
+                amount = l["metric"]["amount"]
+                clm4["Pincodes"].append(entityName)
+                clm4["Transaction_count"].append(count)
+                clm4["Transaction_amount"].append(amount)
+                clm4["State"].append(state)
+                clm4["Year"].append(year)
+                clm4["Quarter"].append(int(file.strip(".json")))
+
+# Successfully created a DataFrame for top transactions
+Top_Trans = pd.DataFrame(clm4)
+
+# -------------------------------
+# TOP USER DATA BY PINCODE
+# -------------------------------
+# Define path to top user data by state
+path5 = "/content/pulse/data/top/user/country/india/state/"
+# List all states in the directory
+Top_user_list = os.listdir(path5)
+Top_user_list
+
+# Dictionary to store top user data
+clm5 = {'State': [], 'Year': [], 'Quarter': [], 'Pincodes': [], 'RegisteredUser': []}
+
+# Loop through each state
+for state in Top_user_list:
+    cur_state = path5 + state + "/"
+    Top_year_list = os.listdir(cur_state)  # List all years available
+
+    for year in Top_year_list:
+        cur_year = cur_state + year + "/"
+        Top_file_list = os.listdir(cur_year)  # List all quarterly JSON files
+
+        # Loop through each JSON file
+        for file in Top_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            E = json.load(data)
+
+            # Extract pincode-wise registered user data
+            for m in E["data"]["pincodes"]:
+                name = m["name"]
+                registeredusers = m["registeredUsers"]
+                clm5["Pincodes"].append(name)
+                clm5["RegisteredUser"].append(registeredusers)
+                clm5["State"].append(state)
+                clm5["Year"].append(year)
+                clm5["Quarter"].append(int(file.strip(".json")))
+
+# Convert the dictionary to a Pandas DataFrame
+Top_User = pd.DataFrame(clm5)
+
+
+# -------------------------------
+# TOP INSURANCE DATA BY PINCODE
+# -------------------------------
+path6 = "/content/pulse/data/top/insurance/country/india/state/"
+Top_insur_list = os.listdir(path6)
+
+# Dictionary to store top insurance data
+clm6 = {"State":[], "Year":[], "Quarter":[], "Pincodes":[],"Insurance_count":[], "Insurance_amount":[]}
+
+# Loop through each state
+for state in Top_insur_list:
+    cur_state = path6 + state + "/"
+    Top_year_list = os.listdir(cur_state)
+
+    for year in Top_year_list:
+        cur_year = cur_state + year + "/"
+        Top_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Top_file_list:
+            cur_files = cur_year + file
+            data = open(cur_files,"r")
+            F = json.load(data)
+
+            # Extract pincode-wise insurance data
+            for n in F["data"]["pincodes"]:
+                entityName = n["entityName"]
+                count = n["metric"]["count"]
+                amount = n["metric"]["amount"]
+                clm6["Pincodes"].append(entityName)
+                clm6["Insurance_count"].append(count)
+                clm6["Insurance_amount"].append(amount)
+                clm6["State"].append(state)
+                clm6["Year"].append(year)
+                clm6["Quarter"].append(int(file.strip(".json")))
+
+# Convert dictionary to DataFrame
+Top_Insur = pd.DataFrame(clm6)
+
+
+# -------------------------------
+# MAP TRANSACTION DATA BY DISTRICT
+# -------------------------------
+path7 = "/content/pulse/data/map/transaction/hover/country/india/state/"
+Map_trans_list = os.listdir(path7)
+
+# Dictionary to store map transaction data
+clm7 = {'State': [], 'Year': [], 'Quarter': [], 'District': [], 'Transaction_Count': [], 'Transaction_Amount': []}
+
+# Loop through each state
+for state in Map_trans_list:
+    cur_state = path7 + state + "/"
+    Map_year_list = os.listdir(cur_state)
+
+    for year in Map_year_list:
+        cur_year = cur_state + year + "/"
+        Map_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Map_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            G = json.load(data)
+
+            # Extract district-wise transaction data
+            for o in G["data"]["hoverDataList"]:
+                district = o["name"]
+                count = o["metric"][0]["count"]
+                amount = o["metric"][0]["amount"]
+                clm7["District"].append(district)
+                clm7["Transaction_Count"].append(count)
+                clm7["Transaction_Amount"].append(amount)
+                clm7['State'].append(state)
+                clm7['Year'].append(year)
+                clm7['Quarter'].append(int(file.strip('.json')))
+
+# Convert dictionary to DataFrame
+Map_Trans = pd.DataFrame(clm7)
+
+
+# -------------------------------
+# MAP USER DATA BY DISTRICT
+# -------------------------------
+path8 = "/content/pulse/data/map/user/hover/country/india/state/"
+Map_user_list = os.listdir(path8)
+
+# Dictionary to store map user data
+clm8 = {"State": [], "Year": [], "Quarter": [], "District": [], "RegisteredUser": [], "AppOpens": []}
+
+# Loop through each state
+for state in Map_user_list:
+    cur_state = path8 + state + "/"
+    Map_year_list = os.listdir(cur_state)
+
+    for year in Map_year_list:
+        cur_year = cur_state + year + "/"
+        Map_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Map_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            H = json.load(data)
+
+            # Extract district-wise registered users and app opens
+            for p in H["data"]["hoverData"].items():
+                district = p[0]
+                registereduser = p[1]["registeredUsers"]
+                appOpens = p[1]['appOpens']
+                clm8["District"].append(district)
+                clm8["RegisteredUser"].append(registereduser)
+                clm8["AppOpens"].append(appOpens)
+                clm8['State'].append(state)
+                clm8['Year'].append(year)
+                clm8['Quarter'].append(int(file.strip('.json')))
+
+# Convert dictionary to DataFrame
+Map_User = pd.DataFrame(clm8)
+
+
+# -------------------------------
+# MAP INSURANCE DATA BY DISTRICT
+# -------------------------------
+path9= "/content/pulse/data/map/insurance/hover/country/india/state/"
+Map_insur_list= os.listdir(path9)
+
+# Dictionary to store map insurance data
+clm9= {"State":[], "Year":[], "Quarter":[], "District":[], "Transaction_count":[],"Transaction_amount":[] }
+
+# Loop through each state
+for state in Map_insur_list:
+    cur_state = path9 + state + "/"
+    Map_year_list = os.listdir(cur_state)
+
+    for year in Map_year_list:
+        cur_year = cur_state + year + "/"
+        Map_file_list = os.listdir(cur_year)
+
+        # Loop through each JSON file
+        for file in Map_file_list:
+            cur_files = cur_year + file
+            data = open(cur_files,"r")
+            I = json.load(data)
+
+            # Extract district-wise insurance transactions
+            for q in I['data']['hoverDataList']:
+                name = q["name"]
+                count = q["metric"][0]["count"]
+                amount = q["metric"][0]["amount"]
+                clm9["District"].append(name)
+                clm9["Transaction_count"].append(count)
+                clm9["Transaction_amount"].append(amount)
+                clm9["State"].append(state)
+                clm9["Year"].append(year)
+                clm9["Quarter"].append(int(file.strip(".json")))
+
+# Convert dictionary to DataFrame
+Map_Insur = pd.DataFrame(clm9)
+
+
+import sqlite3
+
+# -------------------------------
+# CONNECT TO SQLITE DATABASE
+# -------------------------------
+# Connect to SQLite database; creates file if it doesn't exist
+mydb = sqlite3.connect("phonepe_data.db")
+cursor = mydb.cursor()
+
+
+# -------------------------------
+# DEFINE TABLES AND INSERT TEMPLATES
+# -------------------------------
+# Dictionary containing all tables, their creation SQL, insertion SQL, and a lambda to format DataFrame rows
+TABLES = {
+    # Aggregated Insurance table
+    "aggregated_insurance": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS aggregated_insurance (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Insurance_type TEXT,
+                Insurance_count BIGINT,
+                Insurance_amount BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO aggregated_insurance
+            (State, Year, Quarter, Insurance_type, Insurance_count, Insurance_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        # Convert DataFrame to list of tuples for insertion
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Insurance_type"],
+             row["Insurance_count"], row["Insurance_amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Aggregated Transaction table
+    "aggregated_transaction": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS aggregated_transaction (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Transaction_type TEXT,
+                Transaction_count BIGINT,
+                Transaction_amount BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO aggregated_transaction
+            (State, Year, Quarter, Transaction_type, Transaction_count, Transaction_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Transacion_type"],
+             row["Transacion_count"], row["Transacion_amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Aggregated User table
+    "aggregated_user": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS aggregated_user (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Brands TEXT,
+                Transaction_count BIGINT,
+                Percentage FLOAT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO aggregated_user
+            (State, Year, Quarter, Brands, Transaction_count, Percentage)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Brands"],
+             row["Transaction_count"], row["Percentage"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Map Insurance table (district-level)
+    "map_insurance": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS map_insurance (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                District TEXT,
+                Transaction_count BIGINT,
+                Transaction_amount FLOAT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO map_insurance
+            (State, Year, Quarter, District, Transaction_count, Transaction_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["District"],
+             row["Transaction_count"], row["Transaction_amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Map Transaction table (district-level)
+    "map_transaction": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS map_transaction (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                District TEXT,
+                Transaction_count BIGINT,
+                Transaction_amount FLOAT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO map_transaction
+            (State, Year, Quarter, District, Transaction_count, Transaction_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["District"],
+             row["Transaction_Count"], row["Transaction_Amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Map User table (district-level)
+    "map_user": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS map_user (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                District TEXT,
+                RegisteredUser BIGINT,
+                AppOpens BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO map_user
+            (State, Year, Quarter, District, RegisteredUser, AppOpens)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["District"],
+             row["RegisteredUser"], row["AppOpens"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Top Insurance table (pincode-level)
+    "top_insurance": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS top_insurance (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Pincodes INT,
+                Insurance_count BIGINT,
+                Insurance_amount BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO top_insurance
+            (State, Year, Quarter, Pincodes, Insurance_count, Insurance_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Pincodes"],
+             row["Insurance_count"], row["Insurance_amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Top Transaction table (pincode-level)
+    "top_transaction": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS top_transaction (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Pincodes INT,
+                Transaction_count BIGINT,
+                Transaction_amount BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO top_transaction
+            (State, Year, Quarter, Pincodes, Transaction_count, Transaction_amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Pincodes"],
+             row["Transaction_count"], row["Transaction_amount"]) for _, row in df.iterrows()
+        ]
+    },
+
+    # Top User table (pincode-level)
+    "top_user": {
+        "create": '''
+            CREATE TABLE IF NOT EXISTS top_user (
+                State TEXT,
+                Year INT,
+                Quarter INT,
+                Pincodes INT,
+                RegisteredUser BIGINT
+            )
+        ''',
+        "insert": '''
+            INSERT INTO top_user
+            (State, Year, Quarter, Pincodes, RegisteredUser)
+            VALUES (?, ?, ?, ?, ?)
+        ''',
+        "data": lambda df: [
+            (row["State"], row["Year"], row["Quarter"], row["Pincodes"],
+             row["RegisteredUser"]) for _, row in df.iterrows()
+        ]
+    }
+}
+
+
+# -------------------------------
+# DROP EXISTING TABLES (IF ANY)
+# -------------------------------
+for table_name in TABLES:
+    drop_query = f"DROP TABLE IF EXISTS {table_name}"
+    cursor.execute(drop_query)
+    mydb.commit()
+    print(f"Dropped table {table_name} (if it existed)")
+
+
+# -------------------------------
+# FUNCTION TO CREATE TABLE AND INSERT DATA
+# -------------------------------
+def create_and_insert(table_name, df):
+    """
+    Generic function to:
+    1. Create the table if it doesn't exist
+    2. Insert data from the provided DataFrame
+    """
+    table = TABLES[table_name]
+
+    # Create table
+    cursor.execute(table["create"])
+    mydb.commit()
+    print(f"Created table {table_name}")
+
+    # Prepare data for insertion
+    values = table["data"](df)
+
+    # Insert data into table
+    cursor.executemany(table["insert"], values)
+    mydb.commit()
+    print(f"Data inserted into {table_name}")
+
+
+# -------------------------------
+# EXAMPLE USAGE: CREATE TABLES AND INSERT DATA
+# -------------------------------
+create_and_insert("aggregated_insurance", Agg_Insur)
+create_and_insert("aggregated_transaction", Agg_Trans)
+create_and_insert("aggregated_user", Agg_User)
+create_and_insert("map_insurance", Map_Insur)
+create_and_insert("map_transaction", Map_Trans)
+create_and_insert("map_user", Map_User)
+create_and_insert("top_insurance", Top_Insur)
+create_and_insert("top_transaction", Top_Trans)
+create_and_insert("top_user", Top_User)
+
