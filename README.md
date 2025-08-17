@@ -1,35 +1,24 @@
 PhonePe Pulse Data Visualization Project
-📌 Overview
 
-The PhonePe Pulse Data Visualization Project is a Streamlit-based interactive dashboard that provides insights into UPI transactions and user adoption trends across India.
+Overview
+The PhonePe Pulse Data Visualization Project is a Streamlit-based interactive dashboard that provides insights into UPI transactions and user adoption trends across India. PhonePe, a leading digital payments platform, publishes open data on its PhonePe Pulse GitHub. 
 
-PhonePe, a leading digital payments platform, publishes open data on its PhonePe Pulse GitHub. This project extracts, stores, and visualizes that data to help identify:
-
-Transaction behavior across states, quarters, and categories
-
-Regional adoption trends in users and brands
-
-Areas of growth, stagnation, or decline
+This project extracts, stores, and visualizes that data to help identify:
+		Transaction behavior across states, quarters, and categories
+		Regional adoption trends in users and brands
+		Areas of growth, stagnation, or decline
 
 This dashboard enables data-driven decision-making for financial inclusion, regional campaigns, and product strategies.
 
 ⚙️ Tech Stack
-
 Programming Language: Python
-
 Framework: Streamlit
-
 Database: SQLite (phonepe_data.db)
-
 Visualization: Plotly, Pandas
-
 Deployment:
-
-Locally using Streamlit CLI
-
-Google Colab (with ngrok)
-
-Streamlit Cloud
+	Locally using Streamlit CLI
+	Google Colab (with ngrok)
+	Streamlit Cloud
 
 📂 Project Structure
 📁 phonepe-pulse-project
@@ -44,64 +33,45 @@ Streamlit Cloud
 🟢 Transactions Dashboard
 
 Filters: State, Year, Quarter, Transaction Type
-
 Metrics:
-
-Total transaction count
-
-Total transaction amount
-
-Average transaction value
+	Total transaction count
+	Total transaction amount
+	Average transaction value
 
 Visualizations:
-
-Line chart (trend over quarters)
-
-Pie chart (transaction type share)
-
-Choropleth map (state-wise distribution)
+	Line chart (trend over quarters)
+	Pie chart (transaction type share)
+	Choropleth map (state-wise distribution)
 
 🔵 Users Dashboard
 
 Filters: State, Year, Quarter
-
 Metrics:
-
-Registered users
-
-App opens
-
-Brand adoption percentages
+	Registered users
+	App opens
+	Brand adoption percentages
 
 Visualizations:
-
-Choropleth map for state-wise users
-
-Bar chart for top brands
-
-Line chart for adoption trend
+	Choropleth map for state-wise users
+	Bar chart for top brands
+	Line chart for adoption trend
 
 🟣 Insurance Dashboard (optional)
 
-Analysis of insurance-related transactions over time
+			Analysis of insurance-related transactions over time
 
 🟡 About Tab
 
 Project description
-
 Data source: PhonePe Pulse GitHub
-
 Business use cases
 
 📊 Business Use Cases
 
-Identify top-performing states & transaction categories
-
-Spot underperforming regions → targeted campaigns
-
-Understand UPI adoption trends
-
-Support strategic decision-making for leadership
+	Identify top-performing states & transaction categories
+	Spot underperforming regions → targeted campaigns
+	Understand UPI adoption trends
+	Support strategic decision-making for leadership
 
 ▶️ How to Run
 1️⃣ Clone the repository
@@ -115,17 +85,15 @@ pip install -r requirements.txt
 streamlit run app.py
 
 4️⃣ Access Dashboard
-
 Open the provided localhost URL in your browser.
 
 📦 Dependencies
 
 Create a requirements.txt with:
-
-streamlit
-pandas
-plotly
-sqlite3-binary
+	streamlit
+	pandas
+	plotly
+	sqlite3-binary
 
 📖 Data Source
 
